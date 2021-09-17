@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var _downloader: Fetch
 
+    private val downlUrl = "https://d2btva0juw41cj.cloudfront.net/android-tv-init-data/Beauty+Salons_Explainer.mp4"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
