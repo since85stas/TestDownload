@@ -3,19 +3,11 @@ package stas.batura.testdownload
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import androidx.lifecycle.ViewModelProvider
-import com.tonyodev.fetch2.Download
-import com.tonyodev.fetch2.Error
-import com.tonyodev.fetch2.Fetch
-import com.tonyodev.fetch2.FetchConfiguration
-import com.tonyodev.fetch2.FetchListener
+import com.tonyodev.fetch2.*
 import com.tonyodev.fetch2core.DownloadBlock
+import com.tonyodev.fetch2core.Extras
 import com.tonyodev.fetch2okhttp.OkHttpDownloader
 import okhttp3.OkHttpClient
 import stas.batura.testdownload.databinding.ActivityMainBinding
@@ -26,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
 
-    private lateinit var _downloader: Fetch
+    private lateinit var downloader: Fetch
 
     private val downlUrl = "https://d2btva0juw41cj.cloudfront.net/android-tv-init-data/Beauty+Salons_Explainer.mp4"
 
@@ -44,6 +36,8 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
+
+        downloader = initDownloader()
     }
 
     override fun onStart() {
@@ -51,6 +45,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.textValue.observe(this) {text ->
             binding.textField.text = text
         }
+
+        cache()
     }
 
     /**
@@ -79,11 +75,11 @@ class MainActivity : AppCompatActivity() {
     private fun downloadHandler(): FetchListener = object : FetchListener {
 
         override fun onQueued(download: Download, waitingOnNetwork: Boolean) {
-            viewModel.addText("download is quaede: $download $waitingOnNetwork")
+            viewModel.addText("download is quaede: $waitingOnNetwork")
         }
 
         override fun onCancelled(download: Download) {
-            viewModel.addText("download is canceled: $download")
+            viewModel.addText("download is canceled: ")
         }
 
         override fun onCompleted(download: Download) {
@@ -103,15 +99,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onAdded(download: Download) {
-            viewModel.addText("Downloading added: $download")
+            viewModel.addText("Downloading added: ")
         }
 
         override fun onPaused(download: Download) {
-            viewModel.addText("Downloading paused: $download")
+            viewModel.addText("Downloading paused: ")
         }
 
         override fun onError(download: Download, error: Error, throwable: Throwable?) {
-            viewModel.addText("Downloading error: $download, $throwable")
+            viewModel.addText("Downloading error:  $throwable")
         }
 
         override fun onRemoved(download: Download) {
@@ -127,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onResumed(download: Download) {
-//            TODO("Not yet implemented")
+
         }
 
         override fun onStarted(
@@ -135,12 +131,25 @@ class MainActivity : AppCompatActivity() {
             downloadBlocks: List<DownloadBlock>,
             totalBlocks: Int
         ) {
-            viewModel.addText("download started $download")
+            viewModel.addText("download started ")
         }
 
         override fun onWaitingNetwork(download: Download) {
             viewModel.addText("download wait: onWaitingNetwork")
         }
+    }
+
+    private fun cache() {
+        val path = applicationContext.cacheDir.absolutePath
+        val cachePath = path + "/donwnl.mp4"
+        val request = Request(downlUrl, cachePath)
+        request.tag = "TAG"
+        request.priority = Priority.HIGH
+        request.networkType = NetworkType.ALL
+
+        downloader.enqueue(
+            request, {}, {}
+        )
     }
 }
 

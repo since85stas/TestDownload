@@ -6,14 +6,15 @@ import java.lang.StringBuilder
 
 class MainViewModel: ViewModel() {
 
-    val textValue: MutableLiveData<StringBuilder> = MutableLiveData(StringBuilder(""))
+    val textValue: MutableLiveData<String> = MutableLiveData((""))
 
     fun addText(text: String) {
-        textValue.value?.append(text)?.append("\n")
+        val lastv = textValue.value
+        textValue.value = lastv.plus("\n").plus(text).plus("\n")
     }
 
     fun clearText(text: String) {
-        textValue.value = StringBuilder("")
+        textValue.value = ("")
     }
 
 }

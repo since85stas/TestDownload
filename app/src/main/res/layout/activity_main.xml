@@ -21,6 +21,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
+        android:layout_marginTop="?attr/actionBarSize"
         android:id="@+id/text_field"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
